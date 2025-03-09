@@ -35,6 +35,8 @@ def run():
         #запуск руху героя, ботів та пуль
         hero.move(window)
 
+        hero.minus_heart(bullet_list_bot)
+
         end_time_bot = pygame.time.get_ticks()
         if end_time_bot - start_time_bot >= 2000:
             start_time_bot = end_time_bot
@@ -52,6 +54,8 @@ def run():
             bot.move(window)
             bot.remove(bullet_list_hero)
             bot.shoot(end_time_bot)
+            bot.collide_hero(hero)
+
         
         for bullet in bullet_list_hero:
             bullet.move(window)

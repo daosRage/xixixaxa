@@ -49,6 +49,14 @@ class Hero(Ship):
             self.image = self.image_list[0]
 
         window.blit(self.image, (self.x, self.y)) 
+    
+    def minus_heart(self, bullets):
+        index = self.collidelist(bullets)
+        if index != -1:
+            self.hp -= 1
+            bullets.pop(index)
+    
+
 
 
 class Bot(Ship):
@@ -75,6 +83,11 @@ class Bot(Ship):
         if index != -1:
             bullets.pop(index)
             Bot.bot_list.remove(self)
+    def collide_hero(self, hero):
+        if self.colliderect(hero):
+            hero.hp -= self.damage_index
+            Bot.bot_list.remove(self)
+
 
     def shoot(self, end_shoot):#для стрільби бота
         if end_shoot - self.start_shoot > self.delay_shoot:
