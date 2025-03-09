@@ -5,16 +5,19 @@ pygame.display.set_caption("ЛАБІРИНТ")
 
 def run():
     game = True
+    start_time_bot = 0
     clock = pygame.time.Clock()         #створюємо обєкт часу
 
     #створення обєктів героя
-    hero = Hero(15, 
-                15, 
+    hero = Hero(size_window[0] // 2 - size_hero[0] // 2, 
+                size_window[1] - size_hero[1], 
                 size_hero[0],
                 size_hero[1],
                 hero_image_list,
-                2, 
+                5, 
                 5)
+    
+    
     background = Background(size_bg[0], size_bg[1], bg_image)
     #створення обєкта шрифта
     font = pygame.font.Font(None, 35)
@@ -32,6 +35,29 @@ def run():
         #запуск руху героя, ботів та пуль
         hero.move(window)
 
+        end_time_bot = pygame.time.get_ticks()
+        if end_time_bot - start_time_bot >= 2000:
+            start_time_bot = end_time_bot
+            Bot.bot_list.append(Bot(
+                random.randint(0, size_window[0] - size_bot[0]),
+                - size_bot[1],
+                size_bot[0],
+                size_bot[1],
+                bot_1_image_list,
+                1,
+                1,
+                1
+                ))
+        for bot in Bot.bot_list:
+            bot.move(window)
+            bot.remove(bullet_list_hero)
+            bot.shoot(end_time_bot)
+        
+        for bullet in bullet_list_hero:
+            bullet.move(window)
+        
+        for bullet in bullet_list_bot:
+            bullet.move(window)
 
         #COLLIDE BOT&BULLET
 
@@ -50,6 +76,10 @@ def run():
                     hero.move_check["left"] = True
                 if event.key == pygame.K_d:
                     hero.move_check["right"] = True
+                if event.key == pygame.K_SPACE:
+                    bullet_list_hero.append(Bullet(
+                        hero.centerx - 10/2, hero.y, 10, 20, None, colors["RED"], -5
+                        ))
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
                     hero.move_check["up"] = False
@@ -59,6 +89,7 @@ def run():
                     hero.move_check["left"] = False
                 if event.key == pygame.K_d:
                     hero.move_check["right"] = False
+            
                 
 
         clock.tick(FPS)                 #встановили кількість кадрів на секунду

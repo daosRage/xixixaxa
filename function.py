@@ -52,10 +52,34 @@ class Hero(Ship):
 
 
 class Bot(Ship):
-    def __init__(self, x, y, width, height, image_list, step, hp):
+
+    bot_list = list()
+
+    def __init__(self, x, y, width, height, image_list, step, hp, damage_index):
         super().__init__(x, y, width, height, image_list, step, hp)
         self.start_x = x
         self.start_y = y
+        self.damage_index = damage_index
+        self.start_shoot = 2000
+        self.delay_shoot = random.randint(2000, 2800)
+
+    def move(self, window):
+
+        self.y += self.step
+
+        self.move_image()
+        window.blit(self.image, (self.x, self.y))
+    
+    def remove(self, bullets):
+        index = self.collidelist(bullets)
+        if index != -1:
+            bullets.pop(index)
+            Bot.bot_list.remove(self)
+
+    def shoot(self, end_shoot):#для стрільби бота
+        if end_shoot - self.start_shoot > self.delay_shoot:
+            bullet_list_bot.append(Bullet(self.centerx -10/2, self.bottom, 10, 20, None, colors["BLUE"], 3))
+            self.start_shoot = end_shoot
 
 
 
@@ -69,6 +93,10 @@ class Bullet(pygame.Rect):
         self.start_x = self.x
         self.start_y = self.y
     
+    def move(self, window):
+        self.y += self.step
+        pygame.draw.rect(window, self.color, self)
+    
 
 class Background():
     def __init__(self, width, height, image):
@@ -77,10 +105,11 @@ class Background():
         self.image2 = image
         self.y1 = 0
         self.y2 = -height
+        self.speed = 2
     
     def move(self, window):
-        self.y1 += 5
-        self.y2 += 5
+        self.y1 += self.speed
+        self.y2 += self.speed
         if self.y1 >= self.height:
             self.y1 = - self.height
         if self.y2 >= self.height:
